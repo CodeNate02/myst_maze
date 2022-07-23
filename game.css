@@ -1,0 +1,37 @@
+h2{			
+	font-size:2em;
+}
+body{			
+	background-color: #b0b0b0;
+	color: #404040;
+}
+img{
+    width: 25px;
+    height: 25px;
+}
+
+canvas{
+	background: #b0b0b0;
+	cursor: none;
+}
+
+
+links{
+	color:#0f3bd6;
+	font-size:1.3em;
+	
+}
+
+incompetech{
+	color:#404040;
+	font-size:1.3em;
+	text-align: left;
+}
+
+instructions{
+	font-size:2em;
+}
+
+html{
+	text-align: center
+}
