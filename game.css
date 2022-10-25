@@ -1,13 +1,27 @@
-@import url('https://fonts.googleapis.com/css2?family=Joan&family=Raleway:ital,wght@0,300;0,400;0,600;0,700;0,900;1,300;1,400;1,700&family=Urbanist:ital,wght@0,400;0,500;1,500&display=swap');
-h1{
-	font-family:'Rubik Maze',serif;
+@import url('https://fonts.googleapis.com/css2?family=Joan&family=Raleway:ital,wght@0,300;0,400;0,600;0,700;0,900;1,300;1,400;1,700&family=Rubik+Maze&display=swap');
+header{
+	background-color:white;
+	margin:1em 0;
+	padding:.75em 0;
 }
-h2{			
-	font-size:2em;
+h1{
+	font-family:'Rubik Maze',sans-serif;
+	font-size:4em;
+	font-weight:normal;
+	color:black;
+	margin:0;
+}
+h2{
+	margin:0;
+	font-family:Arial, Helvetica, sans-serif;
+	font-weight:light;
+	font-size:1em;
+	width:full;
 }
 body{			
 	background-color: #b0b0b0;
 	color: #404040;
+	margin:0;
 }
 img{
     width: 25px;
@@ -19,16 +33,20 @@ canvas{
 	cursor: none;
 }
 
-#incompetech{
-	color:#404040;
-	font-size:1.3em;
-	text-align: left;
-}
-
-#instructions{
-	font-size:2em;
-}
 
 html{
 	text-align: center
+}
+#instructions{
+	list-style-type:none;
+	background-color: white;
+	padding:1em 0
+}
+#incompetech, #credit{
+	background-color:gray;
+	width:fit-content;
+	margin:auto;
+	padding:10px;
+	border-radius:15px;
+	color:rgb(50,50,50);
 }
