@@ -1,3 +1,7 @@
+@import url('https://fonts.googleapis.com/css2?family=Joan&family=Raleway:ital,wght@0,300;0,400;0,600;0,700;0,900;1,300;1,400;1,700&family=Urbanist:ital,wght@0,400;0,500;1,500&display=swap');
+h1{
+	font-family:'Rubik Maze',serif;
+}
 h2{			
 	font-size:2em;
 }
@@ -15,20 +19,13 @@ canvas{
 	cursor: none;
 }
 
-
-links{
-	color:#0f3bd6;
-	font-size:1.3em;
-	
-}
-
-incompetech{
+#incompetech{
 	color:#404040;
 	font-size:1.3em;
 	text-align: left;
 }
 
-instructions{
+#instructions{
 	font-size:2em;
 }
 
