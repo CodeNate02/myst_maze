@@ -49,7 +49,7 @@ const splashScreenImage = ImageResource('../images/SplashPage.png'),
 	WaterSpell = ImageResource('../images/Water.png'),
 	Victory = ImageResource('../images/Ladder.png'),
 	collectableSound = new Audio('../sounds/click.wav');
-//Sprite location information
+//Sprite information
 class Sprite {
 	isVisible = true;
 	width = 15;
@@ -66,17 +66,6 @@ class PlayerSprite extends Sprite {
 		super(maze.start);
 	}
 }
-var player = new PlayerSprite();
-var cursor = {
-	x: 0,
-	y: 0,
-	width: 11,
-	height: 11,
-	isVisible: true,
-};
-var spells = [1, 0, 0];
-//0: Teleport, 1: Fire, 2: Water
-
 class TrapSprite extends Sprite {
 	type = undefined;
 	constructor(loc, type) {
@@ -94,29 +83,42 @@ class TrapSprite extends Sprite {
 		});
 	}
 	spell() {
-		switch (this.type) {
-			case 'pitfall':
-				if (spells[0] > 0) {
-					spells[0] -= 1;
-					this.isVisible = false;
-				}
-				break;
-			case 'spike':
-				if (spells[1] > 0) {
-					spells[1] -= 1;
-					this.isVisible = false;
-				}
-				break;
-			case 'fire':
-				if (spells[2] > 0) {
-					spells[2] -= 1;
-					this.isVisible = false;
-				}
-				break;
-		}
-		draw();
+		if(spells[wins[this.type]]>0){
+            spells[wins[this.type]]-=1;
+            this.isVisible=false;
+            draw();
+        }
 	}
 }
+class SpellSprite extends Sprite {
+    type=undefined;
+    constructor(loc, type) {
+        super(loc);
+        this.type=type;
+        window.addEventListener(playerMoved,)
+    }
+}
+
+var cursor = {
+	x: 0,
+	y: 0,
+	width: 11,
+	height: 11,
+	isVisible: true,
+};
+var wins = {
+    'pit':'teleport',
+    'spike':'fire',
+    'fire':'water'
+}
+var spells = {
+    teleport:1,
+    fire:0,
+    water:0
+}
+
+
+var player = new PlayerSprite();
 var score = 0;
 
 //Keyboard Control Variables
@@ -195,7 +197,6 @@ function game() {
 	window.addEventListener('keyup', handleKeyUp, true);
 	//Call the update function every 10 milliseconds
 	canvas.onmousemove = moveCursor;
-	//setInterval(draw, 50);
 	draw();
 	//Track cursor movements
 }
@@ -359,9 +360,9 @@ function draw() {
 	context.font = '25px Rubik Maze';
 	context.fillStyle = '#000000';
 	//Display score
-	context.fillText(spells[0], 50, 37);
-	context.fillText(spells[1], 50, 73);
-	context.fillText(spells[2], 50, 107);
+	context.fillText(spells.teleport, 50, 37);
+	context.fillText(spells.fire, 50, 73);
+	context.fillText(spells.water, 50, 107);
 } //End update function
 
 function handleInput() {
