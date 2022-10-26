@@ -85,18 +85,76 @@ class Player extends Sprite {
 	spriteState = 1;
 	movementStates = {
 		up: undefined,
-		down:undefined,
-		left:undefined,
-		right:undefined
-	}
+		down: undefined,
+		left: undefined,
+		right: undefined,
+	};
 	constructor() {
 		super(maze.start);
-		window.addEventListener('keydown', ()=>{
-
+		window.addEventListener('keydown', evt => {
+			switch (evt.code) {
+				case 'KeyW':
+				case 'ArrowUp':
+					if (!this.movementStates.up)
+						this.movementStates.up = setInterval(
+							() => movePlayerY(1),
+							10
+						);
+					break;
+				case 'KeyA':
+				case 'ArrowLeft':
+					if (!this.movementStates.left)
+						this.movementStates.left = setInterval(
+							() => movePlayerX(-1),
+							10
+						);
+					break;
+				case 'KeyS':
+				case 'ArrowDown':
+					if (!this.movementStates.down)
+						this.movementStates.down = setInterval(
+							() => movePlayerY(-1),
+							10
+						);
+					break;
+				case 'KeyD':
+				case 'ArrowRight':
+					if (!this.movementStates.right)
+						this.movementStates.right = setInterval(
+							() => movePlayerX(1),
+							10
+						);
+					break;
+			}
 		});
-		window.addEventListener('keyup',()=>{
-
+		window.addEventListener('keyup', evt => {
+			switch (evt.code) {
+				case 'KeyW':
+				case 'ArrowUp':
+					clearInterval(this.movementStates.up);
+					this.movementStates.up = undefined;
+					break;
+				case 'KeyA':
+				case 'ArrowLeft':
+					clearInterval(this.movementStates.left);
+					this.movementStates.left = undefined;
+					break;
+				case 'KeyS':
+				case 'ArrowDown':
+					clearInterval(this.movementStates.down);
+					this.movementStates.down = undefined;
+					break;
+				case 'KeyD':
+				case 'ArrowRight':
+					clearInterval(this.movementStates.right);
+					this.movementStates.right = undefined;
+					break;
+			}
 		});
+		function startMovement(direction, f) {
+			if (!this.movementStates[direction])
+				this.movementStates[direction] = setInterval(f, 10);
+		}
 	}
 }
 class TrapSprite extends Sprite {
@@ -150,7 +208,7 @@ var spells = {
 	water: 0,
 };
 
-var player = new Sprite(maze.start);
+const player = new Player();
 var score = 0;
 
 //Keyboard Control Variables
@@ -446,4 +504,38 @@ function collides(a, b) {
 		a.y < b.y + b.height &&
 		a.y + a.height > b.y
 	);
+}
+function movePlayerX(move) {
+	let newX = player.x + move;
+	if (
+		move > 0 &&
+		!context
+			.getImageData(newX + player.width, player.y, 1, player.height) //Check to the right of the player when moving right
+			.data.includes(54)
+	)
+		player.x = newX;
+	else if (
+		move < 0 &&
+		!context
+			.getImageData(newX, player.y, 1, player.height) //Check to the left of the player when moving left
+			.data.includes(54)
+	)
+		player.x = newX;
+	draw();
+}
+function movePlayerY(move) {
+	let newY = player.y - move;
+	if (
+		move > 0 &&
+		!context.getImageData(player.x, newY, player.width, 1).data.includes(54)
+	)
+		player.y = newY;
+	else if (
+		move < 0 &&
+		!context
+			.getImageData(player.x, newY + player.height, player.width, 1)
+			.data.includes(54)
+	)
+		player.y = newY;
+	draw();
 }
