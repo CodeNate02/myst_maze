@@ -1,6 +1,9 @@
 //Call the init function as soon as the page has finished loading
 window.onload = init;
+// Set Up Variables
+var canvas, context;
 var gameRunning = false;
+
 const Sounds = {
 	victoryMusic: new Audio('../sounds/Who_Likes_to_Party.wav'),
 	gameMusic: new Audio('../sounds/The_Complex.wav'),
@@ -22,9 +25,6 @@ const Traps = {
 		fire: 'water',
 	},
 };
-const wins = {};
-// Set Up Variables
-var canvas, context;
 const WIDTH = 600;
 const HEIGHT = 400;
 const playerMoved = new Event('playerMoved');
@@ -91,7 +91,7 @@ const splashScreenImage = ImageResource('../images/SplashPage.png'),
 	TeleSpell = ImageResource('../images/Teleport.png'),
 	WaterSpell = ImageResource('../images/Water.png'),
 	Victory = ImageResource('../images/Ladder.png'),
-	VictoryImage = ImageResource('../images/Victory_Screen.png')
+	VictoryImage = ImageResource('../images/Victory_Screen.png');
 //Sprite information
 class Sprite {
 	isVisible = true;
@@ -232,25 +232,14 @@ var player = new Player();
 var score = 0;
 
 //Keyboard Control Variables
-var isUpDown = false;
-isDownDown = false;
-isRightDown = false;
-isLeftDown = false;
-isWDown = false;
-isADown = false;
-isSDown = false;
-isDDown = false;
-isQDown = false;
-speed = 1;
-newX = 515;
-newY = 311;
+var speed = 1;
 // splash screen image settings
 
 splashScreenClicked = false;
 // Cursor settings
 
-victory = new Goal();
-var spiketraps = [],
+var victory = new Goal(),
+	spiketraps = [],
 	firetraps = [],
 	pitfalls = [],
 	firespells = [],
@@ -439,12 +428,7 @@ function movePlayerY(move) {
 	}
 }
 
-function stopGame() {
-	gameRunning = false;
-}
-
 function endScreen(screen, sound) {
-	console.log(screen);
 	Sounds.gameMusic.pause();
 	(Sounds.gameMusic = new Audio('../sounds/The_Complex.wav')),
 		(gameRunning = false);
@@ -455,6 +439,7 @@ function endScreen(screen, sound) {
 	//Listen for player click on splash screen
 	canvas.onmousedown = () => {
 		canvas.onmousedown = undefined;
+		sound.pause();
 		game();
 	};
 }

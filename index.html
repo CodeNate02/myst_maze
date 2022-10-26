@@ -4,15 +4,20 @@
 		<title>Myst Maze</title>
 		<link rel="stylesheet" type="text/css" href="game.css" />
 		<link rel="icon" href="/images/Teleport.png" />
-		<script type="text/javascript" src="js/Myst_Maze.js"></script>
+		<script type="module" src="js/Myst_Maze.js"></script>
 	</head>
 	<body>
 		<header>
-			<h1>MYST MAZE </h1>
-			<h2 id='subtitle'>Remastered-(ish)</h2>
+			<h1>MYST MAZE</h1>
+			<h2 id="subtitle">Remastered-(ish)</h2>
 		</header>
-		
-		<canvas width="600" height="400" id="myCanvas" willReadFrequently></canvas>
+
+		<canvas
+			width="600"
+			height="400"
+			id="myCanvas"
+			willReadFrequently
+		></canvas>
 
 		<section id="intro">
 			Legends speak of the mysterious Myst Maze and the treasure held
@@ -27,9 +32,9 @@
 				<img src="images/Ladder.png" />
 			</li>
 			<li>
-				Avoid the Fire Traps: <img src = images/Fire_Trap.png>
-				, the Pitfalls: <img src= images/Pitfall.png> , and the
-				Spike Traps <img src= images/Spike_Trap.png>
+				Avoid the Fire Traps: <img src = images/Fire_Trap.png> , the
+				Pitfalls: <img src= images/Pitfall.png> , and the Spike Traps
+				<img src= images/Spike_Trap.png>
 			</li>
 			<span>
 				But if you want to reach your goal, you'll need to use spells to
@@ -51,18 +56,20 @@
 				After you've collected a spell, move your cursor over the
 				correct trap and press "Q" to destroy it.
 			</li>
-			<li style='font-weight: bold;'>
-				You start with a single teleport spell, but you'll need to find more while you navigate the maze if you want to reach the end
+			<li style="font-weight: bold">
+				You start with a single teleport spell, but you'll need to find
+				more while you navigate the maze if you want to reach the end
 			</li>
 		</ul>
 		<br id="line" />
 		<section id="credit">
-			"The Complex" Kevin MacLeod (incompetech.com)
+			"The Complex", "Who Likes to Party"
+			<br />
+			Kevin MacLeod (incompetech.com)
 			<br />
 			Licensed under Creative Commons: By Attribution 3.0
 			<br />
 			http://creativecommons.org/licenses/by/3.0/
-			<br />
 		</section>
 	</body>
 </html>
