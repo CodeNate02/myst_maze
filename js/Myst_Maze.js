@@ -1,10 +1,33 @@
 //Call the init function as soon as the page has finished loading
 window.onload = init;
+var gameRunning = false;
+const Sounds = {
+	victoryMusic: new Audio('../sounds/Who_Likes_to_Party.wav'),
+	gameMusic: new Audio('../sounds/The_Complex.wav'),
+	pickUp: new Audio('../sounds/click.wav'),
+	fire: new Audio('../sounds/fireball.wav'),
+	water: new Audio('../sounds/water.wav'),
+	tp: new Audio('../sounds/magic.wav'),
+	loss: new Audio('../sounds/lossbeep.wav'),
+};
+const Traps = {
+	lossScreens: {
+		fire: ImageResource('../images/Fire_Loss.png'),
+		spike: ImageResource('../images/Spike_Loss.png'),
+		pit: ImageResource('../images/Pitfall_Loss.png'),
+	},
+	weakness: {
+		pit: 'teleport',
+		spike: 'fire',
+		fire: 'water',
+	},
+};
+const wins = {};
 // Set Up Variables
 var canvas, context;
 const WIDTH = 600;
 const HEIGHT = 400;
-const event = new Event('playerMoved');
+const playerMoved = new Event('playerMoved');
 const maze = {
 	screen: '../images/Game_Screen_v4.png',
 	start: { x: 515, y: 311 },
@@ -68,7 +91,7 @@ const splashScreenImage = ImageResource('../images/SplashPage.png'),
 	TeleSpell = ImageResource('../images/Teleport.png'),
 	WaterSpell = ImageResource('../images/Water.png'),
 	Victory = ImageResource('../images/Ladder.png'),
-	collectableSound = new Audio('../sounds/click.wav');
+	VictoryImage = ImageResource('../images/Victory_Screen.png')
 //Sprite information
 class Sprite {
 	isVisible = true;
@@ -89,43 +112,36 @@ class Player extends Sprite {
 		left: undefined,
 		right: undefined,
 	};
+	reset() {
+		this.x = maze.start.x;
+		this.y = maze.start.y;
+	}
 	constructor() {
+		const startMovement = (direction, f) => {
+			if (!this.movementStates[direction])
+				this.movementStates[direction] = setInterval(f, 16);
+		};
 		super(maze.start);
 		window.addEventListener('keydown', evt => {
-			switch (evt.code) {
-				case 'KeyW':
-				case 'ArrowUp':
-					if (!this.movementStates.up)
-						this.movementStates.up = setInterval(
-							() => movePlayerY(1),
-							10
-						);
-					break;
-				case 'KeyA':
-				case 'ArrowLeft':
-					if (!this.movementStates.left)
-						this.movementStates.left = setInterval(
-							() => movePlayerX(-1),
-							10
-						);
-					break;
-				case 'KeyS':
-				case 'ArrowDown':
-					if (!this.movementStates.down)
-						this.movementStates.down = setInterval(
-							() => movePlayerY(-1),
-							10
-						);
-					break;
-				case 'KeyD':
-				case 'ArrowRight':
-					if (!this.movementStates.right)
-						this.movementStates.right = setInterval(
-							() => movePlayerX(1),
-							10
-						);
-					break;
-			}
+			if (gameRunning)
+				switch (evt.code) {
+					case 'KeyW':
+					case 'ArrowUp':
+						startMovement('up', () => movePlayerY(1));
+						break;
+					case 'KeyA':
+					case 'ArrowLeft':
+						startMovement('left', () => movePlayerX(-1));
+						break;
+					case 'KeyS':
+					case 'ArrowDown':
+						startMovement('down', () => movePlayerY(-1));
+						break;
+					case 'KeyD':
+					case 'ArrowRight':
+						startMovement('right', () => movePlayerX(1));
+						break;
+				}
 		});
 		window.addEventListener('keyup', evt => {
 			switch (evt.code) {
@@ -151,10 +167,6 @@ class Player extends Sprite {
 					break;
 			}
 		});
-		function startMovement(direction, f) {
-			if (!this.movementStates[direction])
-				this.movementStates[direction] = setInterval(f, 10);
-		}
 	}
 }
 class TrapSprite extends Sprite {
@@ -163,19 +175,19 @@ class TrapSprite extends Sprite {
 		super(loc);
 		this.type = type;
 		window.addEventListener('click', () => {
-			if (collides(this, cursor) && this.isVisible) {
+			if (this.isVisible && collides(this, cursor)) {
 				this.spell();
 			}
 		});
-		window.addEventListener('playermoved', () => {
-			if (collides(this, player) && this.isVisible) {
-				console.log('Collision detected!');
+		window.addEventListener('playerMoved', () => {
+			if (this.isVisible && collides(this, player)) {
+				endScreen(Traps.lossScreens[this.type], Sounds.loss);
 			}
 		});
 	}
 	spell() {
-		if (spells[wins[this.type]] > 0) {
-			spells[wins[this.type]] -= 1;
+		if (spells[Traps.weakness[this.type]] > 0) {
+			spells[Traps.weakness[this.type]] -= 1;
 			this.isVisible = false;
 			draw();
 		}
@@ -186,7 +198,23 @@ class SpellSprite extends Sprite {
 	constructor(loc, type) {
 		super(loc);
 		this.type = type;
-		window.addEventListener(playerMoved);
+		window.addEventListener('playerMoved', () => {
+			if (this.isVisible && collides(this, player)) {
+				Sounds.pickUp.play();
+				spells[this.type] += 1;
+				this.isVisible = false;
+			}
+		});
+	}
+}
+class Goal extends Sprite {
+	constructor() {
+		super(maze.victory);
+		window.addEventListener('playerMoved', () => {
+			if (this.isVisible && collides(this, player)) {
+				endScreen(VictoryImage, Sounds.victoryMusic);
+			}
+		});
 	}
 }
 
@@ -197,18 +225,10 @@ var cursor = {
 	height: 11,
 	isVisible: true,
 };
-var wins = {
-	pit: 'teleport',
-	spike: 'fire',
-	fire: 'water',
-};
-var spells = {
-	teleport: 1,
-	fire: 0,
-	water: 0,
-};
 
-const player = new Player();
+var spells;
+
+var player = new Player();
 var score = 0;
 
 //Keyboard Control Variables
@@ -221,7 +241,7 @@ isADown = false;
 isSDown = false;
 isDDown = false;
 isQDown = false;
-speed = 1.5;
+speed = 1;
 newX = 515;
 newY = 311;
 // splash screen image settings
@@ -229,7 +249,7 @@ newY = 311;
 splashScreenClicked = false;
 // Cursor settings
 
-victory = new Sprite({ x: maze.victory.x });
+victory = new Goal();
 var spiketraps = [],
 	firetraps = [],
 	pitfalls = [],
@@ -251,41 +271,55 @@ function init() {
 
 // Set Up Functions
 function game() {
+	player.reset();
+	spells = {
+		teleport: 1,
+		fire: 0,
+		water: 0,
+	};
+	Sounds.gameMusic.play();
 	//Generate Fire Traps
+
+	firetraps = [];
 	for (let f = 0; f < maze.traps.fire.length; f++) {
 		firetraps.push(new TrapSprite(maze.traps.fire[f], 'fire'));
 	}
+	spiketraps = [];
 	// //Generate Spike Traps
 	for (let f = 0; f < maze.traps.spike.length; f++) {
 		spiketraps.push(new TrapSprite(maze.traps.spike[f], 'spike'));
 	}
+	pitfalls = [];
 	// //Generate pitfalls
 	for (let f = 0; f < maze.traps.pit.length; f++) {
 		pitfalls.push(new TrapSprite(maze.traps.pit[f], 'pit'));
 	}
+	firespells = [];
 	// //Generate fire spells
 	for (let f = 0; f < maze.spells.fire.length; f++) {
-		firespells.push(new TrapSprite(maze.spells.fire[f], 'fire'));
+		firespells.push(new SpellSprite(maze.spells.fire[f], 'fire'));
 	}
+	telespells = [];
 	// //Generate teleport spells
 	for (let f = 0; f < maze.spells.tp.length; f++) {
-		telespells.push(new TrapSprite(maze.spells.tp[f], 'teleport'));
+		telespells.push(new SpellSprite(maze.spells.tp[f], 'teleport'));
 	}
+	waterspells = [];
 	// //Generate water spells
 	// for (let ws = 0; ws < 6; ws++) {
 	for (let f = 0; f < maze.spells.water.length; f++) {
-		waterspells.push(new TrapSprite(maze.spells.water[f], 'water'));
+		waterspells.push(new SpellSprite(maze.spells.water[f], 'water'));
 	}
-	//Listen and handle keypresses
-	window.addEventListener('keydown', handleKeyDown, true);
-	window.addEventListener('keyup', handleKeyUp, true);
-	//Call the update function every 10 milliseconds
 	canvas.onmousemove = moveCursor;
+	gameRunning = true;
 	draw();
 	//Track cursor movements
 }
 
 function draw() {
+	if (!gameRunning) {
+		return;
+	}
 	//Clear canvas of shapes
 	//Potatoes (why did I comment 'Potatoes' here?  This was a sophomore-year me comment.  Present me has no idea, but I can't bring myself to delete it.  Long live the Potatoes.)
 	clear();
@@ -335,151 +369,6 @@ function draw() {
 	context.fillText(spells.water, 50, 107);
 } //End update function
 
-function handleInput() {
-	if (isUpDown) {
-		newY = player.y - speed;
-	}
-	if (isDownDown) {
-		newY = player.y + speed;
-	}
-
-	if (isLeftDown) {
-		newX = player.x - speed;
-	}
-	if (isRightDown) {
-		newX = player.x + speed;
-	}
-
-	if (isWDown) {
-		newY = player.y - speed;
-	}
-	if (isSDown) {
-		newY = player.y + speed;
-	}
-
-	if (isADown) {
-		newX = player.x - speed;
-	}
-	if (isDDown) {
-		newX = player.x + speed;
-	}
-	console.log('moving!');
-	var canmove = true;
-	var didmove = false;
-	for (let i = 0; i <= 14; i++) {
-		if (context.getImageData(newX, newY + i, 1, 1).data[0] == 54) {
-			newX = player.x;
-			newY = player.y;
-			canmove = false;
-		} else if (context.getImageData(newX + i, newY, 1, 1).data[0] == 54) {
-			newX = player.x;
-			newY = player.y;
-			canmove = false;
-		} else if (
-			context.getImageData(newX + 14, newY + i, 1, 1).data[0] == 54
-		) {
-			newX = player.x;
-			newY = player.y;
-			canmove = false;
-		} else if (
-			context.getImageData(newX + i, newY + 14, 1, 1).data[0] == 54
-		) {
-			newX = player.x;
-			newY = player.y;
-			canmove = false;
-		}
-	}
-	if (canmove === true) {
-		player.y = newY;
-		player.x = newX;
-		didmove = true;
-	}
-	if (didmove === true) {
-		canmove = true;
-		didmove = false;
-	}
-}
-function handleKeyDown(evt) {
-	if (evt.keyCode == 68) {
-		// Right
-		isDDown = true;
-	}
-	if (evt.keyCode == 83) {
-		// Down
-		isSDown = true;
-	}
-	if (evt.keyCode == 87) {
-		// Up
-		isWDown = true;
-	}
-	if (evt.keyCode == 65) {
-		// Left
-		isADown = true;
-	}
-
-	if (evt.keyCode == 37) {
-		// Right
-		isLeftDown = true;
-	}
-	if (evt.keyCode == 38) {
-		// Down
-		isUpDown = true;
-	}
-	if (evt.keyCode == 39) {
-		// Up
-		isRightDown = true;
-	}
-	if (evt.keyCode == 40) {
-		// Left
-		isDownDown = true;
-	}
-
-	if (evt.keyCode == 81) {
-		//Q
-		isQDown = true;
-	}
-}
-
-function handleKeyUp(evt) {
-	if (evt.keyCode == 68) {
-		// Right
-		isDDown = false;
-	}
-	if (evt.keyCode == 83) {
-		// Down
-		isSDown = false;
-	}
-	if (evt.keyCode == 87) {
-		// Up
-		isWDown = false;
-	}
-	if (evt.keyCode == 65) {
-		// Left
-		isADown = false;
-	}
-
-	if (evt.keyCode == 37) {
-		// Right
-		isLeftDown = false;
-	}
-	if (evt.keyCode == 38) {
-		// Down
-		isUpDown = false;
-	}
-	if (evt.keyCode == 39) {
-		// Up
-		isRightDown = false;
-	}
-	if (evt.keyCode == 40) {
-		// Left
-		isDownDown = false;
-	}
-	if (evt.keyCode == 81) {
-		// Q
-		isQDown = false;
-	}
-}
-
 function clear() {
 	context.clearRect(0, 0, WIDTH, HEIGHT);
 }
@@ -508,34 +397,64 @@ function collides(a, b) {
 function movePlayerX(move) {
 	let newX = player.x + move;
 	if (
-		move > 0 &&
-		!context
-			.getImageData(newX + player.width, player.y, 1, player.height) //Check to the right of the player when moving right
-			.data.includes(54)
-	)
+		(move > 0 &&
+			!context
+				.getImageData(
+					newX + player.width - 1,
+					player.y,
+					1,
+					player.height
+				) //Check to the right of the player when moving right
+				.data.includes(54)) ||
+		(move < 0 &&
+			!context
+				.getImageData(newX, player.y, 1, player.height) //Check to the left of the player when moving left
+				.data.includes(54))
+	) {
 		player.x = newX;
-	else if (
-		move < 0 &&
-		!context
-			.getImageData(newX, player.y, 1, player.height) //Check to the left of the player when moving left
-			.data.includes(54)
-	)
-		player.x = newX;
-	draw();
+		window.dispatchEvent(playerMoved);
+		draw();
+	}
 }
 function movePlayerY(move) {
 	let newY = player.y - move;
 	if (
-		move > 0 &&
-		!context.getImageData(player.x, newY, player.width, 1).data.includes(54)
-	)
+		(move > 0 &&
+			!context
+				.getImageData(player.x, newY, player.width, 1)
+				.data.includes(54)) ||
+		(move < 0 &&
+			!context
+				.getImageData(
+					player.x,
+					newY + player.height - 1,
+					player.width,
+					1
+				)
+				.data.includes(54))
+	) {
 		player.y = newY;
-	else if (
-		move < 0 &&
-		!context
-			.getImageData(player.x, newY + player.height, player.width, 1)
-			.data.includes(54)
-	)
-		player.y = newY;
-	draw();
+		window.dispatchEvent(playerMoved);
+		draw();
+	}
+}
+
+function stopGame() {
+	gameRunning = false;
+}
+
+function endScreen(screen, sound) {
+	console.log(screen);
+	Sounds.gameMusic.pause();
+	(Sounds.gameMusic = new Audio('../sounds/The_Complex.wav')),
+		(gameRunning = false);
+	context.drawImage(screen, 0, 0);
+	sound.play();
+	clear();
+	context.drawImage(screen, 0, 0);
+	//Listen for player click on splash screen
+	canvas.onmousedown = () => {
+		canvas.onmousedown = undefined;
+		game();
+	};
 }
