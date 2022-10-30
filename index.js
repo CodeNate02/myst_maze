@@ -5,19 +5,19 @@ var canvas, context;
 var gameRunning = false;
 
 const Sounds = {
-	victoryMusic: new Audio('../sounds/Who_Likes_to_Party.wav'),
-	gameMusic: new Audio('../sounds/The_Complex.wav'),
-	pickUp: new Audio('../sounds/click.wav'),
-	fire: new Audio('../sounds/fireball.wav'),
-	water: new Audio('../sounds/water.wav'),
-	tp: new Audio('../sounds/magic.wav'),
-	loss: new Audio('../sounds/lossbeep.wav'),
+	victoryMusic: new Audio('assets/sounds/Who_Likes_to_Party.wav'),
+	gameMusic: new Audio('assets/sounds/The_Complex.wav'),
+	pickUp: new Audio('assets/sounds/click.wav'),
+	fire: new Audio('assets/sounds/fireball.wav'),
+	water: new Audio('assets/sounds/water.wav'),
+	tp: new Audio('assets/sounds/magic.wav'),
+	loss: new Audio('assets/sounds/lossbeep.wav'),
 };
 const Traps = {
 	lossScreens: {
-		fire: ImageResource('../images/Fire_Loss.png'),
-		spike: ImageResource('../images/Spike_Loss.png'),
-		pit: ImageResource('../images/Pitfall_Loss.png'),
+		fire: ImageResource('assets/images/Fire_Loss.png'),
+		spike: ImageResource('assets/images/Spike_Loss.png'),
+		pit: ImageResource('assets/images/Pitfall_Loss.png'),
 	},
 	weakness: {
 		pit: 'teleport',
@@ -29,7 +29,7 @@ const WIDTH = 600;
 const HEIGHT = 400;
 const playerMoved = new Event('playerMoved');
 const maze = {
-	screen: '../images/Game_Screen_v4.png',
+	screen: 'assets/images/Game_Screen_v4.png',
 	start: { x: 515, y: 311 },
 	victory: { x: 96, y: 34 },
 	traps: {
@@ -80,18 +80,18 @@ const maze = {
 	},
 };
 //Load image assets
-const splashScreenImage = ImageResource('../images/SplashPage.png'),
-	cursorImage = ImageResource('../images/MouseCursor.png'),
-	playerImage = ImageResource('../images/Player.png'),
-	FireTrap = ImageResource('../images/Fire_Trap.png'),
-	SpikeTrap = ImageResource('../images/Spike_Trap.png'),
-	PitFall = ImageResource('../images/Pitfall.png'),
-	backgroundImage = ImageResource('../images/Game_Screen_v4.png'),
-	FireSpell = ImageResource('../images/Fireball.png'),
-	TeleSpell = ImageResource('../images/Teleport.png'),
-	WaterSpell = ImageResource('../images/Water.png'),
-	Victory = ImageResource('../images/Ladder.png'),
-	VictoryImage = ImageResource('../images/Victory_Screen.png');
+const splashScreenImage = ImageResource('assets/images/SplashPage.png'),
+	cursorImage = ImageResource('assets/images/MouseCursor.png'),
+	playerImage = ImageResource('assets/images/Player.png'),
+	FireTrap = ImageResource('assets/images/Fire_Trap.png'),
+	SpikeTrap = ImageResource('assets/images/Spike_Trap.png'),
+	PitFall = ImageResource('assets/images/Pitfall.png'),
+	backgroundImage = ImageResource('assets/images/Game_Screen_v4.png'),
+	FireSpell = ImageResource('assets/images/Fireball.png'),
+	TeleSpell = ImageResource('assets/images/Teleport.png'),
+	WaterSpell = ImageResource('assets/images/Water.png'),
+	Victory = ImageResource('assets/images/Ladder.png'),
+	VictoryImage = ImageResource('assets/images/Victory_Screen.png');
 //Sprite information
 class Sprite {
 	isVisible = true;
@@ -430,7 +430,7 @@ function movePlayerY(move) {
 
 function endScreen(screen, sound) {
 	Sounds.gameMusic.pause();
-	(Sounds.gameMusic = new Audio('../sounds/The_Complex.wav')),
+	(Sounds.gameMusic = new Audio('assets/sounds/The_Complex.wav')),
 		(gameRunning = false);
 	context.drawImage(screen, 0, 0);
 	sound.play();
