@@ -1,9 +1,10 @@
 <!DOCTYPE html>
-<html>
-	<head>
+<html lang='en'>
+	<head><meta charset="utf-8">
 		<title>Myst Maze</title>
-		<link rel="stylesheet" type="text/css" href="./index.css" />
-		<link rel="icon" href="./assets/images/Teleport.png" />
+		<link rel="stylesheet" type="text/css" href="./index.css">
+		<link rel="icon" href="./assets/images/Teleport.png">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
 		<script type="module" src="./index.js"></script>
 	</head>
 	<body>
@@ -11,21 +12,19 @@
 			<h1>MYST MAZE</h1>
 			<h2 id="subtitle">Remastered-(ish)</h2>
 		</header>
-
-		<canvas
-			width="600"
-			height="400"
-			id="myCanvas"
-			willReadFrequently
-		></canvas>
-
 		<section id="intro">
 			Legends speak of the mysterious Myst Maze and the treasure held
 			within. Nobody has been able to navigate the traps and reach the end
 			goal. One boy, armed with magical spells he found in the maze, plans
 			on navigating it and reaching the treasure.
 		</section>
-		<ul id="instructions">
+		<div id='text' > </div>
+		<canvas
+			width="600"
+			height="400"
+			id="myCanvas"
+		></canvas>
+		<!-- <ul id="instructions">
 			<li>Use the WASD keys or the arrow keys to move.</li>
 			<li>
 				To win the game, reach the ladder:
@@ -60,7 +59,7 @@
 				You start with a single teleport spell, but you'll need to find
 				more while you navigate the maze if you want to reach the end
 			</li>
-		</ul>
+		</ul> -->
 		<br id="line" />
 		<section id="credit">
 			"The Complex", "Who Likes to Party"
