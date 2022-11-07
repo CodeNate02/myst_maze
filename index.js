@@ -1,35 +1,42 @@
+import * as Images from './assets/images';
+import * as Sounds from './assets/sounds'
 //Call the init function as soon as the page has finished loading
 window.onload = init;
 // Set Up Variables
 var canvas, context;
 var gameRunning = false;
 
-const Sounds = {
-	victoryMusic: new Audio('assets/sounds/Who_Likes_to_Party.wav'),
-	gameMusic: new Audio('assets/sounds/The_Complex.wav'),
-	pickUp: new Audio('assets/sounds/click.wav'),
-	fire: new Audio('assets/sounds/fireball.wav'),
-	water: new Audio('assets/sounds/water.wav'),
-	tp: new Audio('assets/sounds/magic.wav'),
-	loss: new Audio('assets/sounds/lossbeep.wav'),
+const GameSounds = {
+	victoryMusic: new Audio(Sounds.WhoLikesToParty),
+	gameMusic: new Audio(Sounds.TheComplex),
+	pickUp: new Audio(Sounds.Click),
+	fire: new Audio(Sounds.Fire),
+	water: new Audio(Sounds.water),
+	tp: new Audio(Sounds.magic),
+	loss: new Audio(Sounds.LossBeep),
 };
 const Traps = {
 	lossScreens: {
-		fire: ImageResource('assets/images/Fire_Loss.png'),
-		spike: ImageResource('assets/images/Spike_Loss.png'),
-		pit: ImageResource('assets/images/Pitfall_Loss.png'),
+		fire: ImageResource(Images.Fire_Loss_Screen),
+		spike: ImageResource(Images.Spike_Loss_Screen),
+		pit: ImageResource(Images.Pitfall_Loss_Screen),
 	},
 	weakness: {
 		pit: 'teleport',
 		spike: 'fire',
 		fire: 'water',
 	},
+	sound: {
+		pit: GameSounds.tp,
+		spike: GameSounds.fire,
+		fire: GameSounds.water
+	}
 };
 const WIDTH = 600;
 const HEIGHT = 400;
 const playerMoved = new Event('playerMoved');
 const maze = {
-	screen: 'assets/images/Game_Screen_v4.png',
+	screen: Images.Background,
 	start: { x: 515, y: 311 },
 	victory: { x: 96, y: 34 },
 	traps: {
@@ -80,18 +87,18 @@ const maze = {
 	},
 };
 //Load image assets
-const splashScreenImage = ImageResource('assets/images/SplashPage.png'),
-	cursorImage = ImageResource('assets/images/MouseCursor.png'),
-	playerImage = ImageResource('assets/images/Player.png'),
-	FireTrap = ImageResource('assets/images/Fire_Trap.png'),
-	SpikeTrap = ImageResource('assets/images/Spike_Trap.png'),
-	PitFall = ImageResource('assets/images/Pitfall.png'),
-	backgroundImage = ImageResource('assets/images/Game_Screen_v4.png'),
-	FireSpell = ImageResource('assets/images/Fireball.png'),
-	TeleSpell = ImageResource('assets/images/Teleport.png'),
-	WaterSpell = ImageResource('assets/images/Water.png'),
-	Victory = ImageResource('assets/images/Ladder.png'),
-	VictoryImage = ImageResource('assets/images/Victory_Screen.png');
+const splashScreenImage = ImageResource(Images.SplashPage),
+	cursorImage = ImageResource(Images.Cursor),
+	playerImage = ImageResource(Images.Player),
+	FireTrap = ImageResource(Images.FireTrap),
+	SpikeTrap = ImageResource(Images.SpikeTrap),
+	PitFall = ImageResource(Images.Pitfall),
+	backgroundImage = ImageResource(Images.Background),
+	FireSpell = ImageResource(Images.Fireball),
+	TeleSpell = ImageResource(Images.Teleport),
+	WaterSpell = ImageResource(Images.Water),
+	Victory = ImageResource(Images.Ladder),
+	VictoryImage = ImageResource(Images.Victory_Screen);
 //Sprite information
 class Sprite {
 	isVisible = true;
@@ -181,7 +188,7 @@ class TrapSprite extends Sprite {
 		});
 		window.addEventListener('playerMoved', () => {
 			if (this.isVisible && collides(this, player)) {
-				endScreen(Traps.lossScreens[this.type], Sounds.loss);
+				endScreen(Traps.lossScreens[this.type], GameSounds.loss);
 			}
 		});
 	}
@@ -200,7 +207,7 @@ class SpellSprite extends Sprite {
 		this.type = type;
 		window.addEventListener('playerMoved', () => {
 			if (this.isVisible && collides(this, player)) {
-				Sounds.pickUp.play();
+				GameSounds.pickUp.play();
 				spells[this.type] += 1;
 				this.isVisible = false;
 			}
@@ -212,7 +219,7 @@ class Goal extends Sprite {
 		super(maze.victory);
 		window.addEventListener('playerMoved', () => {
 			if (this.isVisible && collides(this, player)) {
-				endScreen(VictoryImage, Sounds.victoryMusic);
+				endScreen(VictoryImage, GameSounds.victoryMusic);
 			}
 		});
 	}
@@ -229,13 +236,6 @@ var cursor = {
 var spells;
 
 var player = new Player();
-var score = 0;
-
-//Keyboard Control Variables
-var speed = 1;
-// splash screen image settings
-
-splashScreenClicked = false;
 // Cursor settings
 
 var victory = new Goal(),
@@ -266,7 +266,7 @@ function game() {
 		fire: 0,
 		water: 0,
 	};
-	Sounds.gameMusic.play();
+	GameSounds.gameMusic.play();
 	//Generate Fire Traps
 
 	firetraps = [];
@@ -429,8 +429,8 @@ function movePlayerY(move) {
 }
 
 function endScreen(screen, sound) {
-	Sounds.gameMusic.pause();
-	(Sounds.gameMusic = new Audio('assets/sounds/The_Complex.wav')),
+	GameSounds.gameMusic.pause();
+	(GameSounds.gameMusic = new Audio(Sounds.TheComplex)),
 		(gameRunning = false);
 	context.drawImage(screen, 0, 0);
 	sound.play();
