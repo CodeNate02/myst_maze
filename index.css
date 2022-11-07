@@ -44,6 +44,7 @@ html{
 }
 #incompetech, #credit{
 	background-color:gray;
+	width:-moz-fit-content;
 	width:fit-content;
 	margin:auto;
 	padding:10px;

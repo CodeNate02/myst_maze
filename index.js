@@ -11,8 +11,8 @@ const GameSounds = {
 	gameMusic: new Audio(Sounds.TheComplex),
 	pickUp: new Audio(Sounds.Click),
 	fire: new Audio(Sounds.Fire),
-	water: new Audio(Sounds.water),
-	tp: new Audio(Sounds.magic),
+	water: new Audio(Sounds.Water),
+	tp: new Audio(Sounds.Magic),
 	loss: new Audio(Sounds.LossBeep),
 };
 const Traps = {
@@ -196,6 +196,7 @@ class TrapSprite extends Sprite {
 		if (spells[Traps.weakness[this.type]] > 0) {
 			spells[Traps.weakness[this.type]] -= 1;
 			this.isVisible = false;
+			Traps.sound[this.type].play();
 			draw();
 		}
 	}
@@ -224,6 +225,7 @@ class Goal extends Sprite {
 		});
 	}
 }
+
 
 var cursor = {
 	x: 0,
@@ -317,7 +319,7 @@ function draw() {
 	context.drawImage(playerImage, player.x, player.y);
 	context.drawImage(cursorImage, cursor.x, cursor.y);
 	//Draw Victory Pickup
-	context.drawImage(Victory, maze.victory.x, maze.victory.y);
+	context.drawImage(Victory, victory.x, victory.y);
 
 	//Draw Fireball
 	pitfalls.forEach(pitfall => {
