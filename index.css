@@ -33,6 +33,11 @@ canvas{
 	cursor: none;
 }
 
+#intro{
+	font-family:'Raleway',sans-serif;
+	max-width:45em;
+	margin:20px auto;
+}
 
 html{
 	text-align: center
