@@ -125,7 +125,7 @@ const Timer = {
 		this.startTime = 0;
 	},
 	stop: function () {
-		if (this.runningTimer) this.runningTimer.clearInterval();
+		clearInterval(this.runningTimer);
 	},
 };
 //Sprite information
@@ -472,6 +472,7 @@ function movePlayerY(move) {
 }
 function endScreen(screen, sound) {
 	GameEvents.clear();
+	Timer.stop();
 	GameSounds.gameMusic.pause();
 	(GameSounds.gameMusic = new Audio(Sounds.TheComplex)),
 		(gameRunning = false);
