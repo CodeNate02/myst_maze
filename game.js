@@ -70,7 +70,7 @@ const Timer = {
 		}, 1000);
 	},
 	reset: function () {
-		this.startTime = 0;
+		this.time = 0;
 	},
 	stop: function () {
 		clearInterval(this.runningTimer);
