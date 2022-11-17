@@ -1,5 +1,5 @@
 import * as Images from './assets/images';
-import * as Sounds from './assets/sounds'
+import * as Sounds from './assets/sounds';
 
 // Set Up Variables
 var canvas, context;
@@ -28,8 +28,8 @@ const Traps = {
 	sound: {
 		pit: GameSounds.tp,
 		spike: GameSounds.fire,
-		fire: GameSounds.water
-	}
+		fire: GameSounds.water,
+	},
 };
 const WIDTH = 600;
 const HEIGHT = 400;
@@ -85,6 +85,7 @@ const maze = {
 		],
 	},
 };
+
 //Load image assets
 const splashScreenImage = ImageResource(Images.SplashPage),
 	cursorImage = ImageResource(Images.Cursor),
@@ -98,6 +99,23 @@ const splashScreenImage = ImageResource(Images.SplashPage),
 	WaterSpell = ImageResource(Images.Water),
 	Victory = ImageResource(Images.Ladder),
 	VictoryImage = ImageResource(Images.Victory_Screen);
+
+const Timer = {
+	time: 0,
+	runningTimer: undefined,
+	start: function () {
+		this.runningTimer = setInterval(() =>{
+			this.time++;
+			draw();
+		},1000 );
+	},
+	reset: function () {
+		this.startTime = 0;
+	},
+	stop: function () {
+		if (this.runningTimer) this.runningTimer.clearInterval();
+	},
+};
 //Sprite information
 class Sprite {
 	isVisible = true;
@@ -225,7 +243,6 @@ class Goal extends Sprite {
 	}
 }
 
-
 var cursor = {
 	x: 0,
 	y: 0,
@@ -263,6 +280,7 @@ export default init;
 // Set Up Functions
 function game() {
 	player.reset();
+	Timer.reset();
 	spells = {
 		teleport: 1,
 		fire: 0,
@@ -303,6 +321,7 @@ function game() {
 	}
 	canvas.onmousemove = moveCursor;
 	gameRunning = true;
+	Timer.start();
 	draw();
 	//Track cursor movements
 }
@@ -358,6 +377,8 @@ function draw() {
 	context.fillText(spells.teleport, 50, 37);
 	context.fillText(spells.fire, 50, 73);
 	context.fillText(spells.water, 50, 107);
+	context.font = '20px Rubik Maze';
+	context.fillText(formatTime(Timer.time), 29, 140);
 } //End update function
 
 function clear() {
@@ -429,7 +450,6 @@ function movePlayerY(move) {
 		draw();
 	}
 }
-
 function endScreen(screen, sound) {
 	GameSounds.gameMusic.pause();
 	(GameSounds.gameMusic = new Audio(Sounds.TheComplex)),
@@ -444,4 +464,9 @@ function endScreen(screen, sound) {
 		sound.pause();
 		game();
 	};
+}
+function formatTime(time) {
+	let minutes = Math.floor(time / 60);
+	let seconds = time % 60;
+	return `${minutes}:${seconds < 10 ? `0${seconds}` : seconds }`;
 }
