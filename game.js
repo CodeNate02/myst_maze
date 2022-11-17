@@ -33,7 +33,19 @@ const Traps = {
 };
 const WIDTH = 600;
 const HEIGHT = 400;
-const playerMoved = new Event('playerMoved');
+const playerMoved = new Event('playerMoved'),
+	gameOver = new Event('gameOver'),
+	gameClick = new Event('gameClick');
+const GameEvents = {
+	events: new EventTarget(),
+	clear: function () {
+		this.events = new EventTarget();
+	},
+};
+window.addEventListener('mousedown', () =>
+	GameEvents.events.dispatchEvent(gameClick)
+);
+
 const maze = {
 	screen: Images.Background,
 	start: { x: 515, y: 311 },
@@ -104,10 +116,10 @@ const Timer = {
 	time: 0,
 	runningTimer: undefined,
 	start: function () {
-		this.runningTimer = setInterval(() =>{
+		this.runningTimer = setInterval(() => {
 			this.time++;
 			draw();
-		},1000 );
+		}, 1000);
 	},
 	reset: function () {
 		this.startTime = 0;
@@ -198,12 +210,12 @@ class TrapSprite extends Sprite {
 	constructor(loc, type) {
 		super(loc);
 		this.type = type;
-		window.addEventListener('click', () => {
+		GameEvents.events.addEventListener('gameClick', () => {
 			if (this.isVisible && collides(this, cursor)) {
 				this.spell();
 			}
 		});
-		window.addEventListener('playerMoved', () => {
+		GameEvents.events.addEventListener('playerMoved', () => {
 			if (this.isVisible && collides(this, player)) {
 				endScreen(Traps.lossScreens[this.type], GameSounds.loss);
 			}
@@ -220,22 +232,30 @@ class TrapSprite extends Sprite {
 }
 class SpellSprite extends Sprite {
 	type = undefined;
+	checkColission() {
+		if (this.isVisible && collides(this, player)) {
+			GameSounds.pickUp.play();
+			spells[this.type] += 1;
+			this.isVisible = false;
+		}
+	}
+	clear = function () {
+		window.removeEventListener('playerMoved', () => this.checkColission());
+		window.removeEventListener('gameOver', () => this.clear());
+	};
 	constructor(loc, type) {
 		super(loc);
 		this.type = type;
-		window.addEventListener('playerMoved', () => {
-			if (this.isVisible && collides(this, player)) {
-				GameSounds.pickUp.play();
-				spells[this.type] += 1;
-				this.isVisible = false;
-			}
-		});
+		GameEvents.events.addEventListener('playerMoved', () =>
+			this.checkColission()
+		);
+		window.addEventListener('gameOver', () => clear());
 	}
 }
 class Goal extends Sprite {
 	constructor() {
 		super(maze.victory);
-		window.addEventListener('playerMoved', () => {
+		GameEvents.events.addEventListener('playerMoved', () => {
 			if (this.isVisible && collides(this, player)) {
 				endScreen(VictoryImage, GameSounds.victoryMusic);
 			}
@@ -424,7 +444,7 @@ function movePlayerX(move) {
 				.data.includes(54))
 	) {
 		player.x = newX;
-		window.dispatchEvent(playerMoved);
+		GameEvents.events.dispatchEvent(playerMoved);
 		draw();
 	}
 }
@@ -446,11 +466,12 @@ function movePlayerY(move) {
 				.data.includes(54))
 	) {
 		player.y = newY;
-		window.dispatchEvent(playerMoved);
+		GameEvents.events.dispatchEvent(playerMoved);
 		draw();
 	}
 }
 function endScreen(screen, sound) {
+	GameEvents.clear();
 	GameSounds.gameMusic.pause();
 	(GameSounds.gameMusic = new Audio(Sounds.TheComplex)),
 		(gameRunning = false);
@@ -468,5 +489,5 @@ function endScreen(screen, sound) {
 function formatTime(time) {
 	let minutes = Math.floor(time / 60);
 	let seconds = time % 60;
-	return `${minutes}:${seconds < 10 ? `0${seconds}` : seconds }`;
+	return `${minutes}:${seconds < 10 ? `0${seconds}` : seconds}`;
 }
