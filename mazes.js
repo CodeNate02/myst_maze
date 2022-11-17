@@ -1,4 +1,3 @@
-import { Background } from "./assets/images"
 import MazeImgs from './assets/mazes'
 const Mazes = [
     {
