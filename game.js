@@ -1,6 +1,6 @@
 import * as Images from './assets/images';
 import * as Sounds from './assets/sounds';
-
+import {Scores, formatTime} from './scoreboard';
 // Set Up Variables
 var canvas, context;
 var gameRunning = false;
@@ -41,11 +41,13 @@ const GameEvents = {
 		this.events = new EventTarget();
 	},
 };
+
 window.addEventListener('mousedown', () =>
 	GameEvents.events.dispatchEvent(gameClick)
 );
 
 const maze = {
+	mazeID: 'Classic',
 	screen: Images.Background,
 	start: { x: 515, y: 311 },
 	victory: { x: 96, y: 34 },
@@ -140,7 +142,6 @@ class Sprite {
 	}
 }
 class Player extends Sprite {
-	spriteState = 1;
 	movementStates = {
 		up: undefined,
 		down: undefined,
@@ -250,6 +251,7 @@ class Goal extends Sprite {
 		GameEvents.events.addEventListener('playerMoved', () => {
 			if (this.isVisible && collides(this, player)) {
 				endScreen(VictoryImage, GameSounds.victoryMusic);
+				gameWin();
 			}
 		});
 	}
@@ -473,8 +475,7 @@ function endScreen(screen, sound) {
 		game();
 	};
 }
-function formatTime(time) {
-	let minutes = Math.floor(time / 60);
-	let seconds = time % 60;
-	return `${minutes}:${seconds < 10 ? `0${seconds}` : seconds}`;
+function gameWin() {
+	console.log(`Game won in ${formatTime(Timer.time)}`);
+	Scores.addTime(Timer.time, maze.mazeID);
 }
