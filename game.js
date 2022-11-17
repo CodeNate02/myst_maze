@@ -1,12 +1,11 @@
 import * as Images from './assets/images';
 import * as Sounds from './assets/sounds';
 import { getAMaze } from './mazes';
-import {Scores, formatTime} from './scoreboard';
+import { Scores, formatTime } from './scoreboard';
 // Set Up Variables
 var canvas, context;
 var gameRunning = false;
 var maze = getAMaze();
-
 const GameSounds = {
 	victoryMusic: new Audio(Sounds.WhoLikesToParty),
 	gameMusic: new Audio(Sounds.TheComplex),
@@ -18,9 +17,9 @@ const GameSounds = {
 };
 const Traps = {
 	lossScreens: {
-		fire: ImageResource(Images.Fire_Loss_Screen),
-		spike: ImageResource(Images.Spike_Loss_Screen),
-		pit: ImageResource(Images.Pitfall_Loss_Screen),
+		fire: new Images.Resource(Images.Fire_Loss_Screen),
+		spike: new Images.Resource(Images.Spike_Loss_Screen),
+		pit: new Images.Resource(Images.Pitfall_Loss_Screen),
 	},
 	weakness: {
 		pit: 'teleport',
@@ -48,18 +47,18 @@ window.addEventListener('mousedown', () =>
 	GameEvents.events.dispatchEvent(gameClick)
 );
 //Load image assets
-const splashScreenImage = ImageResource(Images.SplashPage),
-	cursorImage = ImageResource(Images.Cursor),
-	playerImage = ImageResource(Images.Player),
-	FireTrap = ImageResource(Images.FireTrap),
-	SpikeTrap = ImageResource(Images.SpikeTrap),
-	PitFall = ImageResource(Images.Pitfall),
-	backgroundImage = ImageResource(Images.Background),
-	FireSpell = ImageResource(Images.Fireball),
-	TeleSpell = ImageResource(Images.Teleport),
-	WaterSpell = ImageResource(Images.Water),
-	Victory = ImageResource(Images.Ladder),
-	VictoryImage = ImageResource(Images.Victory_Screen);
+const splashScreenImage = new Images.Resource(Images.SplashPage),
+	cursorImage = new Images.Resource(Images.Cursor),
+	playerImage = new Images.Resource(Images.Player),
+	FireTrap = new Images.Resource(Images.FireTrap),
+	SpikeTrap = new Images.Resource(Images.SpikeTrap),
+	PitFall = new Images.Resource(Images.Pitfall),
+	backgroundImage = new Images.Resource(Images.Background),
+	FireSpell = new Images.Resource(Images.Fireball),
+	TeleSpell = new Images.Resource(Images.Teleport),
+	WaterSpell = new Images.Resource(Images.Water),
+	Victory = new Images.Resource(Images.Ladder),
+	VictoryImage = new Images.Resource(Images.Victory_Screen);
 
 const Timer = {
 	time: 0,
@@ -294,6 +293,7 @@ function draw() {
 	//Potatoes (why did I comment 'Potatoes' here?  This was a sophomore-year me comment.  Present me has no idea, but I can't bring myself to delete it.  Long live the Potatoes.)
 	clear();
 	context.drawImage(backgroundImage, 0, 0);
+	context.drawImage(maze.screen,95,30);
 	//Draw player
 	context.drawImage(playerImage, player.x, player.y);
 	context.drawImage(cursorImage, cursor.x, cursor.y);
@@ -332,22 +332,20 @@ function draw() {
 
 	//Score text font and color
 	context.font = '25px Rubik Maze';
+	context.textAlign = "center";
 	context.fillStyle = '#000000';
 	//Display score
-	context.fillText(spells.teleport, 50, 37);
-	context.fillText(spells.fire, 50, 73);
-	context.fillText(spells.water, 50, 107);
+	context.fillText(spells.teleport, 52, 37);
+	context.fillText(spells.fire, 52, 73);
+	context.fillText(spells.water, 52, 107);
 	context.font = '20px Rubik Maze';
-	context.fillText(formatTime(Timer.time), 29, 140);
+	context.textAlign = "right";
+	context.fillText(formatTime(Timer.time), 69, 140);
 } //End update function
 function clear() {
 	context.clearRect(0, 0, WIDTH, HEIGHT);
 }
-function ImageResource(src) {
-	let img = new Image();
-	img.src = src;
-	return img;
-}
+
 function moveCursor(event) {
 	cursor.x = event.pageX - canvas.offsetLeft;
 	cursor.y = event.pageY - canvas.offsetTop;
@@ -373,11 +371,11 @@ function movePlayerX(move) {
 					1,
 					player.height
 				) //Check to the right of the player when moving right
-				.data.includes(54)) ||
+				.data.includes(72)) ||
 		(move < 0 &&
 			!context
 				.getImageData(newX, player.y, 1, player.height) //Check to the left of the player when moving left
-				.data.includes(54))
+				.data.includes(72))
 	) {
 		player.x = newX;
 		GameEvents.events.dispatchEvent(playerMoved);
@@ -390,7 +388,7 @@ function movePlayerY(move) {
 		(move > 0 &&
 			!context
 				.getImageData(player.x, newY, player.width, 1)
-				.data.includes(54)) ||
+				.data.includes(72)) ||
 		(move < 0 &&
 			!context
 				.getImageData(
@@ -399,7 +397,7 @@ function movePlayerY(move) {
 					player.width,
 					1
 				)
-				.data.includes(54))
+				.data.includes(72))
 	) {
 		player.y = newY;
 		GameEvents.events.dispatchEvent(playerMoved);

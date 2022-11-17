@@ -9,10 +9,16 @@ import SplashPage from './SplashPage.png';
 import Teleport from './Teleport.png';
 import Victory_Screen from './Victory_Screen.png';
 import Water from './Water.png';
-import Background from './Game_Screen_v4.png';
+import Background from './bgBlank.png';
 import Fire_Loss_Screen from './Fire_Loss.png';
 import FireTrap from './Fire_Trap.png';
 import Fireball from './Fireball.png';
+export class Resource extends Image {
+	constructor(src) {
+		super();
+		this.src = src;
+	}
+}
 export {
 	Ladder,
 	Cursor,
