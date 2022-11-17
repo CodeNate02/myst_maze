@@ -286,7 +286,7 @@ var victory = new Goal(),
 
 function init() {
 	canvas = document.getElementById('myCanvas');
-	context = canvas.getContext('2d');
+	context = canvas.getContext('2d',{willReadFrequently:true});
 	//Draw splash screen
 	context.drawImage(splashScreenImage, 0, 0);
 	//Listen for player click on splash screen
