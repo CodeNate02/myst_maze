@@ -34,7 +34,6 @@ const Traps = {
 const WIDTH = 600;
 const HEIGHT = 400;
 const playerMoved = new Event('playerMoved'),
-	gameOver = new Event('gameOver'),
 	gameClick = new Event('gameClick');
 const GameEvents = {
 	events: new EventTarget(),
@@ -232,24 +231,17 @@ class TrapSprite extends Sprite {
 }
 class SpellSprite extends Sprite {
 	type = undefined;
-	checkColission() {
-		if (this.isVisible && collides(this, player)) {
-			GameSounds.pickUp.play();
-			spells[this.type] += 1;
-			this.isVisible = false;
-		}
-	}
-	clear = function () {
-		window.removeEventListener('playerMoved', () => this.checkColission());
-		window.removeEventListener('gameOver', () => this.clear());
-	};
+	checkColission() {}
 	constructor(loc, type) {
 		super(loc);
 		this.type = type;
-		GameEvents.events.addEventListener('playerMoved', () =>
-			this.checkColission()
-		);
-		window.addEventListener('gameOver', () => clear());
+		GameEvents.events.addEventListener('playerMoved', () => {
+			if (this.isVisible && collides(this, player)) {
+				GameSounds.pickUp.play();
+				spells[this.type] += 1;
+				this.isVisible = false;
+			}
+		});
 	}
 }
 class Goal extends Sprite {
@@ -286,7 +278,7 @@ var victory = new Goal(),
 
 function init() {
 	canvas = document.getElementById('myCanvas');
-	context = canvas.getContext('2d',{willReadFrequently:true});
+	context = canvas.getContext('2d', { willReadFrequently: true });
 	//Draw splash screen
 	context.drawImage(splashScreenImage, 0, 0);
 	//Listen for player click on splash screen
@@ -296,7 +288,6 @@ function init() {
 	};
 }
 export default init;
-
 // Set Up Functions
 function game() {
 	player.reset();
@@ -345,7 +336,6 @@ function game() {
 	draw();
 	//Track cursor movements
 }
-
 function draw() {
 	if (!gameRunning) {
 		return;
@@ -400,23 +390,19 @@ function draw() {
 	context.font = '20px Rubik Maze';
 	context.fillText(formatTime(Timer.time), 29, 140);
 } //End update function
-
 function clear() {
 	context.clearRect(0, 0, WIDTH, HEIGHT);
 }
-
 function ImageResource(src) {
 	let img = new Image();
 	img.src = src;
 	return img;
 }
-
 function moveCursor(event) {
 	cursor.x = event.pageX - canvas.offsetLeft;
 	cursor.y = event.pageY - canvas.offsetTop;
 	draw();
 }
-
 //Check if object a and object b are colliding
 function collides(a, b) {
 	return (
