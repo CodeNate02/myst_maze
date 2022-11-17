@@ -5,6 +5,7 @@ import {Scores, formatTime} from './scoreboard';
 // Set Up Variables
 var canvas, context;
 var gameRunning = false;
+var maze = getAMaze();
 
 const GameSounds = {
 	victoryMusic: new Audio(Sounds.WhoLikesToParty),
@@ -46,10 +47,6 @@ const GameEvents = {
 window.addEventListener('mousedown', () =>
 	GameEvents.events.dispatchEvent(gameClick)
 );
-
-var maze = getAMaze();
-console.log(maze);
-
 //Load image assets
 const splashScreenImage = ImageResource(Images.SplashPage),
 	cursorImage = ImageResource(Images.Cursor),
@@ -429,4 +426,5 @@ function endScreen(screen, sound) {
 function gameWin() {
 	console.log(`Game won in ${formatTime(Timer.time)}`);
 	Scores.addTime(Timer.time, maze.mazeID);
+	maze = getAMaze();
 }
