@@ -240,6 +240,7 @@ var gameRunning = false;
 window.addEventListener('mousedown', () =>
 	GameEvents.events.dispatchEvent(GameClick)
 );
+// Dev code: log cursor location on click for easier time assigning maze locations
 window.addEventListener('mousedown', () =>
 	console.log(`${Cursor.x},${Cursor.y}`)
 );
@@ -265,7 +266,6 @@ function game() {
 		fire: 0,
 		water: 0,
 	};
-
 	//Generate maze contents
 	for (let key of Object.keys(Maze.current.traps)) {
 		Traps.sprites[key] = [];
@@ -279,7 +279,6 @@ function game() {
 			Spells.sprites[key].push(new SpellSprite(spell, key));
 		}
 	}
-
 	//Track mouse movements
 	canvas.onmousemove = moveCursor;
 	//Start music, timer
